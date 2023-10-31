@@ -1,6 +1,9 @@
 # 项目介绍
 学习开源项目，模拟实现netty，tomcat，springmvc，springboot等核心功能。可以作为提升编码能力的实践项目。欢迎各位一起参与，提交代码，相互学习
 
+# 目标
+最终需要能 mimic-springboot 依赖 mimic-springmvc 依赖 mimic-tomcat 依赖 mimic-netty
+
 # 参与项目方法
 
 1. 首先fork一下仓库
