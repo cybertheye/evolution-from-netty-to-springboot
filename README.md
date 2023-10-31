@@ -11,7 +11,7 @@
 3. git remote add origin 你的仓库地址
 4. git remote add upstream https://github.com/cybertheye/evolution-from-netty-to-springboot.git
 5. 写代码，push，到远程仓库，在Pull Requests 中 点击新建 Pull Request
-6. 同步其他人的提交
+6. 同步项目（目的同步其他人的提交）
 7. git fetch upstream
 8. git rebase upstream/master （冲突合并 git rebase continue)
 9. git push -u origin master:dev  (注意远程仓库的分支)
