@@ -19,6 +19,6 @@ public class SecondServlet extends MimicServlet {
 
     @Override
     protected void doGet(MTRequest req, MTResponse response) throws UnsupportedEncodingException {
-        response.writeAndFlush("inside /hello/a/*");
+        response.writeAndFlush(this.getClass().getName() + " inside /hello/a/*");
     }
 }
