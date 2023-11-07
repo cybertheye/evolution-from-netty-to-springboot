@@ -1,9 +1,11 @@
 package com.attackonarchitect.listener.webcontext;
 
+import com.attackonarchitect.listener.Event;
+
 /**
  * @description:
  */
-public class ServletContextAttributeEvent {
+public class ServletContextAttributeEvent implements Event {
 
     private String name;
     private Object value;

@@ -2,7 +2,10 @@ package com.attackonarchitect.listener;
 
 import com.attackonarchitect.listener.request.ServletRequestAttributeEvent;
 import com.attackonarchitect.listener.request.ServletRequestAttributeListener;
+import com.attackonarchitect.listener.webcontext.ServletContextAttributeEvent;
 import com.attackonarchitect.listener.webcontext.ServletContextAttributeListener;
+import com.attackonarchitect.listener.webcontext.ServletContextEvent;
+import com.attackonarchitect.listener.webcontext.ServletContextListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +15,15 @@ import java.util.List;
  */
 public class NotifierImpl implements Notifier{
 
+    //web context
+    private List<ServletContextListener> servletContextListenersList;
+    private List<ServletContextAttributeListener> servletContextAttributeListenerList;
+
+    //request
     private List<ServletRequestAttributeListener> servletRequestAttributeListenerList;
 
-    public List<ServletRequestAttributeListener> getServletRequestAttributeListenerList() {
-        if(servletRequestAttributeListenerList == null){
-            servletRequestAttributeListenerList = new ArrayList<>();
-        }
-        return servletRequestAttributeListenerList;
-    }
+    //todo 添加其他的 listener
+
 
     public NotifierImpl(List<String> webListeners) {
         init(webListeners);
@@ -30,10 +34,26 @@ public class NotifierImpl implements Notifier{
         webListeners.forEach(listenerClazzName->{
             try {
                 Class<?> clazz = Class.forName(listenerClazzName);
+                //web context
+                if (ServletContextListener.class.isAssignableFrom(clazz)) {
+                    getServletContextListenersList()
+                            .add((ServletContextListener) clazz.newInstance());
+                }
+                if(ServletContextAttributeListener.class.isAssignableFrom(clazz)){
+                    getServletContextAttributeListenerList()
+                            .add((ServletContextAttributeListener) clazz.newInstance());
+                }
+
+                // request
                 if(ServletRequestAttributeListener.class.isAssignableFrom(clazz)){
                     getServletRequestAttributeListenerList()
                             .add((ServletRequestAttributeListener) clazz.newInstance());
                 }
+
+                // session
+                // todo 增加其他类型的 Listener
+
+
 
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
@@ -50,30 +70,79 @@ public class NotifierImpl implements Notifier{
     @Override
     public void notifyListeners(Class<?> listener, Event event) {
         if(listener== ServletRequestAttributeListener.class){
-            nofityRequestAttributeListeners(event);
+            notifyServletRequestAttributeListeners(event);
         }
         if(listener == ServletContextAttributeListener.class){
-            nofityContextAttributeListeners(event);
+            notifyServletContextAttributeListeners(event);
         }
+        if(listener == ServletContextListener.class){
+            notifyServletContextListeners(event);
+        }
+
+        //添加其他类型
+
     }
 
-    private void nofityContextAttributeListeners(Event event) {
+    private void notifyServletContextListeners(Event event) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-
+                getServletContextListenersList()
+                        .forEach(listener -> {
+                            listener.contextInitialized((ServletContextEvent) event);
+                        });
             }
-        });
+        }).start();
+
     }
 
-    private void nofityRequestAttributeListeners(Event event) {
+    private void notifyServletContextAttributeListeners(Event event) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                servletRequestAttributeListenerList.forEach(listener->{
+                getServletContextAttributeListenerList().forEach(listener->{
+                    listener.attributeAdded((ServletContextAttributeEvent) event);
+                });
+            }
+        }).start();
+    }
+
+    private void notifyServletRequestAttributeListeners(Event event) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getServletRequestAttributeListenerList().forEach(listener->{
                     listener.requestAttributeAdded((ServletRequestAttributeEvent) event);
                 });
             }
         }).start();
     }
+
+
+
+
+    ////getter,setter
+
+
+    public List<ServletContextAttributeListener> getServletContextAttributeListenerList() {
+        if(servletContextAttributeListenerList == null){
+            servletContextAttributeListenerList = new ArrayList<>();
+        }
+        return servletContextAttributeListenerList;
+    }
+
+    public List<ServletContextListener> getServletContextListenersList() {
+        if(servletContextListenersList == null){
+            servletContextListenersList = new ArrayList<>();
+        }
+        return servletContextListenersList;
+    }
+
+    public List<ServletRequestAttributeListener> getServletRequestAttributeListenerList() {
+        if(servletRequestAttributeListenerList == null){
+            servletRequestAttributeListenerList = new ArrayList<>();
+        }
+        return servletRequestAttributeListenerList;
+    }
+
 }

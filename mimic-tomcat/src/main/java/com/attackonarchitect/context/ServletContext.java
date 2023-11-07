@@ -11,12 +11,23 @@ import java.util.List;
 
 public interface ServletContext {
 
-    void setAttribute(String name, Object obj);
-    Object getAttribute(String name);
-    void register(EventListener listener);
+    /**
+     * 设置一个属性
+     * @param name
+     * @param obj
+     */
+    <T> void setAttribute(String name, T obj);
 
-    void registerAll(List<String> listeners);
-
+    /**
+     * 取一个属性
+     * @param name
+     * @return
+     */
+     Object getAttribute(String name);
+//    void register(EventListener listener);
+//
+//    void registerAll(List<String> listeners);
+//
 
     Notifier getNotifiler();
 }
