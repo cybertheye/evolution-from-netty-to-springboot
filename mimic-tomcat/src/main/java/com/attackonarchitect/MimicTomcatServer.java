@@ -42,7 +42,6 @@ public class MimicTomcatServer {
         Notifier notifiler = new NotifierImpl(scanner.getWebListenerComponents());
         servletContext = ServletContextFactory.getInstance(scanner.getWebListenerComponents(),notifiler);
 
-        servletContext.registerAll(scanner.getWebListenerComponents());
         run();
     }
 

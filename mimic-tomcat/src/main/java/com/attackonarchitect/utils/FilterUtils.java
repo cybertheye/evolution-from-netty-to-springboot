@@ -28,6 +28,13 @@ public class FilterUtils {
 
         List<String> ret = new ArrayList<>();
         String matcher = uri;
+        /*
+        uri 的路径递减进行 Filter 匹配
+        /hello/a/b -> /hello/a/b/* ? , /hello/a/b ?
+        /hello/a   -> /hello/a/* ?, /hello/a ?
+        /hello     -> /hello/* ?, /hello ?
+        /          -> /* ?
+         */
         while(!"".equals(matcher)){
             if(allFilterUri.contains(matcher+"/*")){
                 ret.add(matcher+"/*");

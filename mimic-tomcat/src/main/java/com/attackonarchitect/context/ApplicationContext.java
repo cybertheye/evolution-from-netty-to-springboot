@@ -3,6 +3,8 @@ package com.attackonarchitect.context;
 import com.attackonarchitect.listener.*;
 import com.attackonarchitect.listener.webcontext.ServletContextAttributeEvent;
 import com.attackonarchitect.listener.webcontext.ServletContextAttributeListener;
+import com.attackonarchitect.listener.webcontext.ServletContextEvent;
+import com.attackonarchitect.listener.webcontext.ServletContextListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,85 +15,47 @@ import java.util.Map;
  * @description:
  */
 public class ApplicationContext implements ServletRegisterContext {
-
-    private Notifier notifier;
-
-    public void setNotifiler(Notifier notifier) {
-        this.notifier = notifier;
-    }
-
     //////--------
     private ApplicationContext() {
     }
 
+    private static ApplicationContext instance;
 
-    private static class ApplicationContextHolder {
-        static ApplicationContext instance = new ApplicationContext();
-    }
+    public static ServletContext getInstance(Notifier notifier) {
+        if(instance == null){
+            instance = new ApplicationContext();
+            instance.setNotifiler(notifier);
+            ServletContextEvent sce = new ServletContextEvent();
+            sce.setSource(instance);
+            sce.setName("servletcontext");
+            //触发通知，但是放在这里通知其实不合理
+            //因为万一有其他的 ServletContext 实现
+            //所以还是放在工厂里面更好感觉。
+            notifier.notifyListeners(ServletContextListener.class,sce);
 
-    public static ServletContext getInstance() {
-        return ApplicationContextHolder.instance;
+        }
+        return instance;
     }
 
     private Map<String, Object> attributeDepot;
 
-    private List<ServletContextAttributeListener> attributeListeners;
-
-
     @Override
-    public void setAttribute(String name, Object obj) {
+    public <T> void setAttribute(String name, T obj) {
         this.getAttributeDepot().put(name, obj);
         ServletContextAttributeEvent event = new ServletContextAttributeEvent();
         event.setName(name);
         event.setValue(obj);
-        this.notifyContextAttributeListeners(event);
-    }
 
-    private void notifyContextAttributeListeners(ServletContextAttributeEvent event) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                getAttributeListeners().forEach(listener -> {
-                    listener.attributeAdded(event);
-                });
-            }
-        }).start();
+        getNotifiler().notifyListeners(ServletContextAttributeListener.class,event);
     }
 
     @Override
     public Object getAttribute(String name) {
-        return null;
+        return this.getAttributeDepot().get(name);
     }
 
-    @Override
-    public void register(EventListener listener) {
-        if (listener instanceof ServletContextAttributeListener) {
-            this.getAttributeListeners().add((ServletContextAttributeListener) listener);
-        }
 
-    }
-
-    @Override
-    public void registerAll(List<String> listeners) {
-        try {
-            for (String listenerClazzName : listeners) {
-                Class<?> clazz = Class.forName(listenerClazzName);
-                register((EventListener) clazz.newInstance());
-            }
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public Notifier getNotifiler() {
-        return this.notifier;
-    }
-
+    private Notifier notifier;
 
     ///////getter setter
 
@@ -102,11 +66,13 @@ public class ApplicationContext implements ServletRegisterContext {
         return attributeDepot;
     }
 
-    private List<ServletContextAttributeListener> getAttributeListeners() {
-        if (attributeListeners == null) {
-            attributeListeners = new ArrayList<>();
-        }
-        return attributeListeners;
+    public void setNotifiler(Notifier notifier) {
+        this.notifier = notifier;
+    }
+
+    @Override
+    public Notifier getNotifiler() {
+        return this.notifier;
     }
 
 

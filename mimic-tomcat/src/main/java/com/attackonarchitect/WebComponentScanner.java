@@ -57,6 +57,7 @@ public class WebComponentScanner implements ComponentScanner {
             } else {
                 String fileName = listFile.getName();
                 if (fileName.endsWith(".class")) {
+                    //拼接全限定类名
                     Class<?> clazz = Class.forName(scanPackage + "." + fileName.split("\\.")[0]);
                     WebServlet webServletAnno = clazz.getAnnotation(WebServlet.class);
                     WebFilter webFilterAnno = clazz.getAnnotation(WebFilter.class);
