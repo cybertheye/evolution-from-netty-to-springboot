@@ -1,5 +1,6 @@
 package project.servlet.subservlet;
 
+import com.attackonarchitect.context.ServletContext;
 import com.attackonarchitect.http.MTRequest;
 import com.attackonarchitect.http.MTResponse;
 import com.attackonarchitect.servlet.MimicServlet;
@@ -20,5 +21,8 @@ public class SecondServlet extends MimicServlet {
     @Override
     protected void doGet(MTRequest req, MTResponse response) throws UnsupportedEncodingException {
         response.writeAndFlush(this.getClass().getName() + " inside /hello/a/*");
+        ServletContext servletContext = getServletContext();
+        Object name = servletContext.getAttribute("name");
+        System.out.println("get attribute from servletcontext: "+name);
     }
 }

@@ -38,6 +38,9 @@ public class MimicHttpInBoundHandler extends ChannelInboundHandlerAdapter {
 
     private void parseParameters(HttpRequest req, Map<String, String> parameters) {
         String uri = req.uri();
+        if(!uri.contains("?")) return;
+
+
         String parametersPart = uri.split("\\?")[1];
         // name=cy&password=123456
 

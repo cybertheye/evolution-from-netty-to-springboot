@@ -15,7 +15,7 @@ public class HttpRequestProxy {
 
     private HttpRequest httpRequest;
     private ServletContext servletContext;
-
+    //用工厂 去生成实例对象，所以这个访问权限限制为 包权限
     HttpRequestProxy(HttpRequest httpRequest, ServletContext servletContext) {
         this.httpRequest = httpRequest;
         this.servletContext = servletContext;
@@ -41,6 +41,7 @@ public class HttpRequestProxy {
             }
         });
 
+        //调用有参构造函数
         return (HttpMTRequest) enhancer.create(new Class[]{ServletContext.class},new Object[]{servletContext});
     }
 }

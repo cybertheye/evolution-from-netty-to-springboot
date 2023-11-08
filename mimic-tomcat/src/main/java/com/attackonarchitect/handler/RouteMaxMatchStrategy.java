@@ -38,6 +38,7 @@ public class RouteMaxMatchStrategy implements RouteStrategy {
         Set<String> allURI = servletManager.getAllRequestUri();
 
         char[] chars = targetUri.toCharArray();
+        //对比两次，先匹配 xxx/* ,然后再匹配 xxx，因为后者是精确匹配
         for(int index = 0; index < chars.length;){
             String matcher = null;
             if(chars[index] == '/'){
