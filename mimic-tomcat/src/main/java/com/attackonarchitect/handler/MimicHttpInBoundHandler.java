@@ -1,5 +1,8 @@
 package com.attackonarchitect.handler;
 
+import com.attackonarchitect.listener.Notifier;
+import com.attackonarchitect.listener.request.ServletRequestEvent;
+import com.attackonarchitect.listener.request.ServletRequestListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.HttpRequest;
@@ -11,7 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @description:
+ * @description: 这里表示一个请求在web 应用中的最开端，表示初始化开始
+ *
  */
 public class MimicHttpInBoundHandler extends ChannelInboundHandlerAdapter {
     private ServletContext servletContext;
@@ -29,15 +33,19 @@ public class MimicHttpInBoundHandler extends ChannelInboundHandlerAdapter {
         Map<String,String> parameters = new HashMap<>();
 
         this.parseParameters(req,parameters);
-
         request.setParametersDepot(parameters);
-        this.notifyRequestListener();
+
+        ServletRequestEvent servletRequestEvent = new ServletRequestEvent();
+        //todo set属性
+
+        this.notifyRequestListener(servletRequestEvent);
 
         super.channelRead(ctx, request);
     }
 
     private void parseParameters(HttpRequest req, Map<String, String> parameters) {
         String uri = req.uri();
+        // 需要支持没有参数
         if(!uri.contains("?")) return;
 
 
@@ -52,6 +60,8 @@ public class MimicHttpInBoundHandler extends ChannelInboundHandlerAdapter {
         });
     }
 
-    private void notifyRequestListener() {
+    private void notifyRequestListener(ServletRequestEvent sre) {
+        Notifier notifier = (Notifier) servletContext.getAttribute("notifier");
+        notifier.notifyListeners(ServletRequestListener.class,sre);
     }
 }

@@ -39,8 +39,10 @@ public class MimicTomcatServer {
             scanPackages[0] = packagePath;
         }
         scanner = new WebComponentScanner(scanPackages);
-        Notifier notifiler = new NotifierImpl(scanner.getWebListenerComponents());
-        servletContext = ServletContextFactory.getInstance(scanner.getWebListenerComponents(),notifiler);
+        Notifier notifier = new NotifierImpl(scanner.getWebListenerComponents());
+        servletContext = ServletContextFactory.getInstance(scanner.getWebListenerComponents(),notifier);
+
+        servletContext.setAttribute("notifier",notifier);
 
         run();
     }
