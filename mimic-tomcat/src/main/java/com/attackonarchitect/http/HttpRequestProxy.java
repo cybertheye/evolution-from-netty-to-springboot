@@ -34,6 +34,8 @@ public class HttpRequestProxy {
                     method0.setAccessible(true);
                     result = method0.invoke(httpRequest, args);
                 }catch (NoSuchMethodException e){
+                    //如果不是 HttpRequest 中的方法，那么就是自己定义的方法
+                    //此时就 调用 原来的方法就可以了
                     result = proxy.invokeSuper(obj,args);
                 }
 

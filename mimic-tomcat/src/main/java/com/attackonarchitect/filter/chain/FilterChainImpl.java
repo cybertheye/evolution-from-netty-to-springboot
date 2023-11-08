@@ -67,7 +67,5 @@ public class FilterChainImpl implements FilterChain {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 }
