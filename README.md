@@ -17,3 +17,7 @@
 7. git fetch upstream
 8. git rebase upstream/master （冲突合并 git rebase continue)
 9. git push -u origin master:dev  (注意远程仓库的分支)
+
+
+# tips
+推荐大家安装一个 IDEA 插件 sequenceDiagram
