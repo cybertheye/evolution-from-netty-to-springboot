@@ -1,0 +1,14 @@
+### default
+GET http://localhost:9999/a?name=cy&password=123456
+
+### first
+GET http://localhost:9999/hello/xyz?name=cy&password=123456
+
+### second
+GET http://localhost:9999/hello/a/xx?name=cy&password=123456
+
+### third
+GET http://localhost:9999/hello/a/b/xx?name=cy&password=123456
+
+### fourth
+GET http://localhost:9999/hello/a/b?name=cy&password=123456
