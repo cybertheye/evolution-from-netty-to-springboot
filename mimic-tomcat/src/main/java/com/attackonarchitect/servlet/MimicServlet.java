@@ -10,10 +10,6 @@ import java.io.UnsupportedEncodingException;
  * @description:
  */
 public abstract class MimicServlet implements Servlet{
-    @Override
-    public ServletContext getServletContext() {
-        return this.servletContext;
-    }
 
     //TODO servletContext
     private ServletContext servletContext;
@@ -22,14 +18,40 @@ public abstract class MimicServlet implements Servlet{
         //
         String method = req.method().name();
         if("GET".equals(method)){
-            doGet(req,response);
+            doGet0(req,response);
         } else if ("POST".equals(method)) {
-            doPost(req,response);
+            doPost0(req,response);
         }
 
     }
 
+    private void doPost0(MTRequest req, MTResponse response) throws UnsupportedEncodingException {
+        doPost(req,response);
+        response.flush();
+    }
+
+    private void doGet0(MTRequest req, MTResponse response) throws UnsupportedEncodingException {
+        doGet(req,response);
+        response.flush();
+    }
+
+
     protected abstract void doPost(MTRequest req, MTResponse response);
 
     protected abstract void doGet(MTRequest req, MTResponse response) throws UnsupportedEncodingException;
+
+
+    /////getter ,setter
+
+
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
+
+    @Override
+    public ServletContext getServletContext() {
+        return this.servletContext;
+    }
+
+
 }
