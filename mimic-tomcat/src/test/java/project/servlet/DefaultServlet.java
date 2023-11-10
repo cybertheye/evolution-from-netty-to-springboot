@@ -18,8 +18,6 @@ public class DefaultServlet extends MimicServlet {
     public void service(MTRequest req, MTResponse response) throws UnsupportedEncodingException {
         super.service(req, response);
 
-
-
     }
 
     @Override
@@ -29,6 +27,6 @@ public class DefaultServlet extends MimicServlet {
 
     @Override
     protected void doGet(MTRequest req, MTResponse response) throws UnsupportedEncodingException {
-        response.writeAndFlush(this.getClass().getName() + " inside /*");
+        response.write(this.getClass().getName() + " inside /*");
     }
 }

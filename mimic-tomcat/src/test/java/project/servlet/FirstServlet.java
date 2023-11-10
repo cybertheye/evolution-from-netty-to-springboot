@@ -20,6 +20,6 @@ public class FirstServlet extends MimicServlet {
     }
     @Override
     protected void doGet(MTRequest req, MTResponse response) throws UnsupportedEncodingException {
-        response.writeAndFlush(this.getClass().getName() + " inside /hello/*");
+        response.write(this.getClass().getName() + " inside /hello/*");
     }
 }

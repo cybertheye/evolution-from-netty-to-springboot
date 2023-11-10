@@ -23,6 +23,6 @@ public class SecondServlet extends MimicServlet {
         ServletContext servletContext = getServletContext();
         Object name = servletContext.getAttribute("name");
         System.out.println("get attribute from servletcontext: "+name);
-        response.writeAndFlush("inside /hello/a/*");
+        response.write("inside /hello/a/*");
     }
 }
