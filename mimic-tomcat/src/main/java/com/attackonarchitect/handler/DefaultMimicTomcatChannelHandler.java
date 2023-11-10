@@ -39,4 +39,11 @@ public class DefaultMimicTomcatChannelHandler extends ChannelInboundHandlerAdapt
 
         filterChain.start(request,response);
     }
+
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
+        super.exceptionCaught(ctx, cause);
+    }
 }
