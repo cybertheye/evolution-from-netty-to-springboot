@@ -9,5 +9,9 @@ import java.io.UnsupportedEncodingException;
 public interface MTResponse {
     void write(String content);
 
-    void writeAndFlush(String content) throws UnsupportedEncodingException;
+    /**
+     * Developers shouldn't call this method
+     * @throws UnsupportedEncodingException
+     */
+    void flush() throws UnsupportedEncodingException;
 }
