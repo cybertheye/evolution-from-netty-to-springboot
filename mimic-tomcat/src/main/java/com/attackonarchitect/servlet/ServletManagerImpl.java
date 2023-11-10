@@ -4,6 +4,7 @@ import com.attackonarchitect.ComponentScanner;
 import com.attackonarchitect.context.ServletContext;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +35,17 @@ public class ServletManagerImpl implements ServletManager{
     private void preInit() {
        this.getServletMapping().put("default",new DefaultMimicServlet());
        this.getServletMapping().put("error",new ErrorMimicServlet());
+
+       //新增 loadOnStartup 初始化功能
+        Collection<ServletInformation> values = provider.getServletInformationMap().values();
+
+        values.forEach(information->{
+            if(information.getLoadOnStartup()>0){
+                instantiate(information);
+            }
+        });
+
+
     }
 
     //////////////////////
@@ -58,11 +70,24 @@ public class ServletManagerImpl implements ServletManager{
 
     @Override
     public Servlet getSpecifedServlet(String uri) {
-        Map<String, String> webServletComponents = provider.getWebServletComponents();
-        String clazzName = webServletComponents.get(uri);
+        if(servletMapping.containsKey(uri)){
+            return servletMapping.get(uri);
+        }
+        Map<String, ServletInformation> servletInformationMap = provider.getServletInformationMap();
+        ServletInformation servletInformation = servletInformationMap.get(uri);
+//        Map<String, String> webServletComponents = provider.getWebServletComponents();
+//        String clazzName = webServletComponents.get(uri);
         Servlet ret = null;
+        ret = instantiate(servletInformation);
+        return ret;
+    }
+
+
+    private Servlet instantiate(ServletInformation servletInformation){
+        String clazzName = servletInformation.getClazzName();
         try {
             if (!servletMapping.containsKey(clazzName)) {
+
                 Class<?> clazz = Class.forName(clazzName);
                 Servlet instance = (Servlet)clazz.newInstance();
 
@@ -82,7 +107,7 @@ public class ServletManagerImpl implements ServletManager{
                 servletMapping.put(clazzName,instance);
             }
 
-            ret = servletMapping.get(clazzName);
+            return servletMapping.get(clazzName);
 
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -92,8 +117,8 @@ public class ServletManagerImpl implements ServletManager{
             throw new RuntimeException(e);
         }
 
-        return ret;
     }
+
 
     @Override
     public Map<String, Servlet> getAllServletMapping(boolean init) {
