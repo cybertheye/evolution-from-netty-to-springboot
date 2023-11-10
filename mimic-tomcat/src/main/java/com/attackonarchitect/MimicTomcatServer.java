@@ -1,5 +1,6 @@
 package com.attackonarchitect;
 
+import com.attackonarchitect.servlet.ServletManagerFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -31,23 +32,19 @@ public class MimicTomcatServer {
     private ComponentScanner scanner;
     private ServletContext servletContext;
     public void start(Class<?> clazz){
-        WebScanPackage annotation = clazz.getAnnotation(WebScanPackage.class);
-        String[] scanPackages = annotation.value();
-        if(scanPackages.length == 1 && scanPackages[0].equals("")){
-            String clazzName = clazz.getName();
-            String packagePath = clazzName.substring(0, clazzName.lastIndexOf("."));
-            scanPackages[0] = packagePath;
-        }
-        scanner = new WebComponentScanner(scanPackages);
+
+        scanner = new WebComponentScanner(clazz);
         Notifier notifier = new NotifierImpl(scanner.getWebListenerComponents());
         servletContext = ServletContextFactory.getInstance(scanner.getWebListenerComponents(),notifier);
-
         servletContext.setAttribute("notifier",notifier);
 
-        run();
+        //初始化servlet一下，主要是preinit
+        ServletManagerFactory.getInstance(scanner,servletContext);
+
+        runNetty();
     }
 
-    private void run(){
+    private void runNetty(){
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
