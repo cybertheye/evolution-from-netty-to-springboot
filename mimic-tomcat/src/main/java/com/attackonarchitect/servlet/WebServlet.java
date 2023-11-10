@@ -9,4 +9,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface WebServlet {
     String[] value() default "";
+
+    int loadOnStartup() default -1;
+
+    WebInitParam[] initParams() default {};
 }
