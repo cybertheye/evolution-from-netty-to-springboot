@@ -24,9 +24,10 @@ public class HttpMTResponse implements MTResponse{
         contents.append(content).append(System.lineSeparator());
     }
 
+
+    // 如何把这个方法设置为内部接口？？？
     @Override
-    public void writeAndFlush(String content) throws UnsupportedEncodingException {
-        this.write(content);
+    public void flush() throws UnsupportedEncodingException {
         DefaultFullHttpResponse response =
                 new DefaultFullHttpResponse(
                         HttpVersion.HTTP_1_1,
