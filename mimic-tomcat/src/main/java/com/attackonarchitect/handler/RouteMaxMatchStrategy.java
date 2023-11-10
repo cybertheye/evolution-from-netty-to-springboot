@@ -37,6 +37,13 @@ public class RouteMaxMatchStrategy implements RouteStrategy {
 
         Set<String> allURI = servletManager.getAllRequestUri();
 
+        // 支持 Spring MVC ， todo 算法优化
+        // 如果只有 "/" 最后要走它
+        if(allURI.contains("/")){
+            matchUri = "/";
+        }
+
+
         char[] chars = targetUri.toCharArray();
         //对比两次，先匹配 xxx/* ,然后再匹配 xxx，因为后者是精确匹配
         for(int index = 0; index < chars.length;){
