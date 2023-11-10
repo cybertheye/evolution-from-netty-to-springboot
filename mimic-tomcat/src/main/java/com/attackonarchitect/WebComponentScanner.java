@@ -2,6 +2,8 @@ package com.attackonarchitect;
 
 import com.attackonarchitect.filter.WebFilter;
 import com.attackonarchitect.listener.WebListener;
+import com.attackonarchitect.servlet.ServletInformation;
+import com.attackonarchitect.servlet.ServletInformationBuilder;
 import com.attackonarchitect.servlet.WebServlet;
 
 import java.io.File;
@@ -16,14 +18,55 @@ import java.util.*;
  */
 public class WebComponentScanner implements ComponentScanner {
 
-    private String[] scanPackages;
+    private Class<?> clazz;
 
-    public WebComponentScanner(String[] scanPackages) {
-        this.scanPackages = scanPackages;
-        scan();
+
+    public WebComponentScanner(Class<?> clazz) {
+        this.clazz = clazz;
+        WebScanPackage annotation = clazz.getAnnotation(WebScanPackage.class);
+        String[] scanPackages = null;
+
+        if(null != annotation) {
+            scanPackages = annotation.value();
+            if (scanPackages.length == 1 && scanPackages[0].equals("")) {
+                String clazzName = clazz.getName();
+                String packagePath = clazzName.substring(0, clazzName.lastIndexOf("."));
+                scanPackages[0] = packagePath;
+            }
+        }
+
+        //为了 支持 Spring MVC 特地弄的
+        enlist();
+
+        scan(scanPackages);
     }
 
-    private void scan() {
+    /**
+     * 注册 Servlet 用
+     */
+    private void enlist(){
+
+        WebEnlistServlet enlistServlet = clazz.getAnnotation(WebEnlistServlet.class);
+        if (enlistServlet != null) {
+            ServletInformation servletInformation = new ServletInformationBuilder()
+                    .setClassName(enlistServlet.servletClass())
+                    .setUrlPattern(enlistServlet.urlPattern())
+                    .setLoadOnStartup(enlistServlet.loadOnStartup())
+                    .setInitParams(enlistServlet.initParams())
+                    .build();
+            Arrays.stream(enlistServlet.urlPattern())
+                    .forEach(url -> {
+                        getServletInformationMap().put(url, servletInformation);
+                    });
+        }
+    }
+
+
+
+    private void scan(String[] scanPackages) {
+        if(scanPackages == null){
+            return;
+        }
         try {
             for (String scanPackage : scanPackages) {
                 scanSingle(scanPackage);
@@ -64,8 +107,17 @@ public class WebComponentScanner implements ComponentScanner {
                     WebListener webListenerAnno = clazz.getAnnotation(WebListener.class);
                     if (webServletAnno != null) {
                         String[] uris = webServletAnno.value();
+
+                        ServletInformationBuilder builder= new ServletInformationBuilder();
+                        ServletInformation servletInformation = builder.setClassName(clazz.getName())
+                                .setUrlPattern(webServletAnno.value())
+                                .setLoadOnStartup(webServletAnno.loadOnStartup())
+                                .setInitParams(webServletAnno.initParams())
+                                .build();
+
                         for (String uri : uris) {
                             webServletComponents.put(uri, clazz.getName());
+                            servletInformationMap.put(uri,servletInformation);
                         }
                     }
                     if (webFilterAnno != null) {
@@ -85,9 +137,15 @@ public class WebComponentScanner implements ComponentScanner {
     }
 
 
+    private Map<String, ServletInformation> servletInformationMap = new HashMap<>();
     private List<String> webListenerComponents = new ArrayList<>();
     private Map<String, String> webServletComponents = new HashMap<>();
     private Map<String, Set<String>> webFilterComponents = new HashMap<>();
+
+    @Override
+    public Map<String, ServletInformation> getServletInformationMap() {
+        return this.servletInformationMap;
+    }
 
     @Override
     public List<String> getWebListenerComponents() {
