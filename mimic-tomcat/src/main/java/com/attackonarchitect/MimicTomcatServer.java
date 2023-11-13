@@ -19,7 +19,8 @@ import com.attackonarchitect.listener.Notifier;
 import com.attackonarchitect.listener.NotifierImpl;
 
 /**
- * @description:
+ * @description: 启动类
+ * 使用netty-server 监听接收请求,作为Connector的简单替代实现
  */
 public class MimicTomcatServer {
     private final int PORT;
@@ -28,8 +29,15 @@ public class MimicTomcatServer {
         this.PORT = PORT;
     }
 
-
+    /**
+     * 组件扫描器servlet,filter,listener
+     */
     private ComponentScanner scanner;
+    /**
+     * servletContext
+     * 1.配置信息
+     * 2.全局数据共享
+     */
     private ServletContext servletContext;
     public void start(Class<?> clazz){
 
@@ -59,9 +67,13 @@ public class MimicTomcatServer {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline pipeline = ch.pipeline();
+                            // 支持 http 协议
                             pipeline.addLast(new HttpServerCodec());
+                            // 处理 http 长度较长导致的解析问题
                             pipeline.addLast(new HttpObjectAggregator(65536));
+                            // 传递上下文,事件监听注册
                             pipeline.addLast(new MimicHttpInBoundHandler(servletContext));
+                            // 模拟servlet处理请求和响应
                             pipeline.addLast(new DefaultMimicTomcatChannelHandler(scanner,servletContext));
 
                         }
