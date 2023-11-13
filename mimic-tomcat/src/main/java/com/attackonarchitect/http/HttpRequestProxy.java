@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 
 /**
  * @description:
+ *  HttpMTRequest 实现的方法转调给 (HttpRequest) msg,可以调用 HttpRequest 中的方法
  */
 public class HttpRequestProxy {
 

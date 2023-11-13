@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * @description:
  *
- *
+ *  抽象servlet的信息，包括类名，urlPattern，loadOnStartup，initParams
  *
  */
 public class ServletInformation {
