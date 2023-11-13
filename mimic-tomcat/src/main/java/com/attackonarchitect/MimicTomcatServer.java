@@ -18,6 +18,8 @@ import com.attackonarchitect.handler.MimicHttpInBoundHandler;
 import com.attackonarchitect.listener.Notifier;
 import com.attackonarchitect.listener.NotifierImpl;
 
+import java.util.Objects;
+
 /**
  * @description:
  */
@@ -32,9 +34,26 @@ public class MimicTomcatServer {
     private ComponentScanner scanner;
     private ServletContext servletContext;
     public void start(Class<?> clazz){
-
         scanner = new WebComponentScanner(clazz);
-        Notifier notifier = new NotifierImpl(scanner.getWebListenerComponents());
+        this.doStart();
+    }
+
+    /**
+     * 依据配置文件初始化
+     *
+     * @param configFile 配置文件路径
+     */
+    public void start(String configFile) {
+        if (configFile.endsWith(".xml")) {
+            scanner = new XmlComponentScanner(configFile);
+        } else {
+            throw new UnsupportedOperationException("不支持的文件格式:  " + configFile);
+        }
+        this.doStart();
+    }
+
+    private void doStart() {
+        Notifier notifier = new NotifierImpl(Objects.requireNonNull(scanner, "没有找到合适的组件扫描器").getWebListenerComponents());
         servletContext = ServletContextFactory.getInstance(scanner.getWebListenerComponents(),notifier);
         servletContext.setAttribute("notifier",notifier);
 

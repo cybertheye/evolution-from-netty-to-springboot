@@ -10,6 +10,7 @@ import com.attackonarchitect.WebScanPackage;
 @WebScanPackage
 public class StartUp {
     public static void main(String[] args) {
-        new MimicTomcatServer(9999).start(StartUp.class);
+//        new MimicTomcatServer(9999).start(StartUp.class);
+        new MimicTomcatServer(9999).start("/WEB-INF/web.xml");
     }
 }
