@@ -14,6 +14,7 @@ import com.attackonarchitect.servlet.ServletManagerFactory;
 
 /**
  * @description:
+ *
  */
 
 public class DefaultMimicTomcatChannelHandler extends ChannelInboundHandlerAdapter {
@@ -30,11 +31,12 @@ public class DefaultMimicTomcatChannelHandler extends ChannelInboundHandlerAdapt
         MTRequest request = (MTRequest) msg;
         String uri = request.uri();
 
+        // 路由策略 -- 最大匹配
         RouteStrategy strategy = new RouteMaxMatchStrategy(ServletManagerFactory.getInstance(scanner,servletContext));
         Servlet servlet = strategy.route(uri);
 
         MTResponse response = new HttpMTResponse(ctx);
-
+        // filter责任链
         Chain filterChain = FilterChainImplFactory.createFilterChain(servlet,uri,scanner);
 
         filterChain.start(request,response);

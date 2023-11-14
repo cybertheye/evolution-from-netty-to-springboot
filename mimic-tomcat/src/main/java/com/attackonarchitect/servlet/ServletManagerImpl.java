@@ -110,10 +110,9 @@ public class ServletManagerImpl implements ServletManager {
 
                 // 对于 注解 @WebInitParams 传过来的参数处理
                 Map<String, String> initParams = servletInformation.getInitParams();
-
-                Class<?> finalClazz = clazz;
-                Servlet finalInstance = instance;
-                if (Objects.nonNull(initParams)) {
+                if(Objects.nonNull(initParams) && !initParams.isEmpty()){
+                    Class<?> finalClazz = clazz;
+                    Servlet finalInstance = instance;
                     initParams.forEach((key, value) -> {
                         try {
                             String setterName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1);

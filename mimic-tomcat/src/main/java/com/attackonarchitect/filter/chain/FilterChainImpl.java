@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * @description:
+ * filter责任链实现
  */
 public class FilterChainImpl implements FilterChain {
 
@@ -53,6 +54,11 @@ public class FilterChainImpl implements FilterChain {
 
     }
 
+    /**
+     * 依次执行所有的filter
+     * @param request
+     * @param response
+     */
     @Override
     public void start(MTRequest request, MTResponse response) {
 
