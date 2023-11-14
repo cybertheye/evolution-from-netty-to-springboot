@@ -18,6 +18,7 @@ import com.attackonarchitect.handler.MimicHttpInBoundHandler;
 import com.attackonarchitect.listener.Notifier;
 import com.attackonarchitect.listener.NotifierImpl;
 
+import java.io.File;
 import java.util.Objects;
 
 /**
@@ -49,6 +50,12 @@ public class MimicTomcatServer {
         } else {
             throw new UnsupportedOperationException("不支持的文件格式:  " + configFile);
         }
+        this.doStart();
+    }
+
+    public void start(ClassLoader classLoader) {
+        scanner = new SpiComponentScanner(classLoader);
+
         this.doStart();
     }
 

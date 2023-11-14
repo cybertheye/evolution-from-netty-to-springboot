@@ -9,6 +9,8 @@ import org.dom4j.io.SAXReader;
 
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 依据xml扫描当前Tomcat组件
@@ -74,6 +76,12 @@ public class XmlComponentScanner implements ComponentScanner {
                 case "servlet-mapping":
                     this.servletMapping(currElement);
                     break;
+                case "filter":
+                    this.filter(currElement);
+                    break;
+                case "filter-mapping":
+                    this.filterMapping(currElement);
+                    break;
             }
         }
     }
@@ -101,7 +109,10 @@ public class XmlComponentScanner implements ComponentScanner {
             // 优先解析到了 servlet-mapping, 补充servlet信息
             String urlPattern = this.webServletComponents.remove(servletName);
             servletInformation.setUrlPattern(urlPattern.split(";"));
-            this.webServletComponents.put(urlPattern, servletClass);
+            for (String uri : servletInformation.getUrlPattern()) {
+                this.servletInformationMap.put(uri, servletInformation);
+                this.webServletComponents.put(uri, servletClass);
+            }
         } else {
             this.servletInformationMap.put(servletName, servletInformation);
         }
@@ -118,8 +129,10 @@ public class XmlComponentScanner implements ComponentScanner {
             // 已经解析了 servlet
             ServletInformation servletInformation = this.servletInformationMap.remove(servletName);
             servletInformation.setUrlPattern(urlPattern.split(";"));
-            this.servletInformationMap.put(urlPattern, servletInformation);
-            this.webServletComponents.put(urlPattern, servletInformation.getClazzName());
+            for (String uri : servletInformation.getUrlPattern()) {
+                this.servletInformationMap.put(uri, servletInformation);
+                this.webServletComponents.put(uri, servletInformation.getClazzName());
+            }
         } else {
             // 还没有解析 servlet
             this.webServletComponents.put(servletName, urlPattern);
@@ -157,6 +170,52 @@ public class XmlComponentScanner implements ComponentScanner {
             System.err.println("找不到监听器实现类");
         } else {
             this.webListenerComponents.add(list.get(0).getText().trim());
+        }
+    }
+
+    private void filter(final Element element) {
+        final String filterName = element.elementText("filter-name");
+        final String filterClass = element.elementText("filter-class");
+        if (filterName == null || filterName.isEmpty()) {
+            throw new IllegalArgumentException("xml 无法解析 servlet-name:\n" + element.asXML());
+        }
+
+        if (this.webFilterComponents.containsKey(filterName)) {
+            // 优先解析到 filter-mapping
+            // 填充映射
+            Set<String> urlPatterns = this.webFilterComponents.remove(filterName);
+            for (String uri : urlPatterns) {
+                this.webFilterComponents.putIfAbsent(uri, new HashSet<>());
+                this.webFilterComponents.get(uri).add(filterClass);
+            }
+        } else {
+            // 还未解析到filter-mapping 存储
+            this.webFilterComponents.put(filterName, Collections.singleton(filterClass));
+        }
+    }
+
+    private void filterMapping(final Element element) {
+        final String filterName = element.elementText("filter-name");
+        final String urlPattern = element.elementText("url-pattern");
+        if (filterName == null || filterName.isEmpty()) {
+            throw new IllegalArgumentException("xml 无法解析 servlet-name:\n" + element.asXML());
+        }
+
+        if (this.webFilterComponents.containsKey(filterName)) {
+            // 优先解析到 filter
+            Set<String> singleonSet = this.webFilterComponents.remove(filterName);
+            if (singleonSet.size() == 1) {
+                singleonSet.forEach(className -> {
+                    for (String uri : urlPattern.split(";")) {
+                        this.webFilterComponents.putIfAbsent(uri, new HashSet<>());
+                        this.webFilterComponents.get(uri).add(className);
+                    }
+                });
+            } else {
+                throw new IllegalStateException(filterName + " 过滤器解析失败!");
+            }
+        } else {
+            this.webFilterComponents.put(filterName, Stream.of(urlPattern.split(";")).collect(Collectors.toSet()));
         }
     }
 

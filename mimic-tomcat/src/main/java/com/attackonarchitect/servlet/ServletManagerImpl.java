@@ -113,19 +113,21 @@ public class ServletManagerImpl implements ServletManager {
 
                 Class<?> finalClazz = clazz;
                 Servlet finalInstance = instance;
-                initParams.forEach((key, value) -> {
-                    try {
-                        String setterName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1);
-                        Method method = finalClazz.getMethod(setterName,value.getClass());
-                        method.invoke(finalInstance,value);
-                    } catch (NoSuchMethodException e) {
-                        throw new RuntimeException(e);
-                    } catch (InvocationTargetException e) {
-                        throw new RuntimeException(e);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+                if (Objects.nonNull(initParams)) {
+                    initParams.forEach((key, value) -> {
+                        try {
+                            String setterName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1);
+                            Method method = finalClazz.getMethod(setterName,value.getClass());
+                            method.invoke(finalInstance,value);
+                        } catch (NoSuchMethodException e) {
+                            throw new RuntimeException(e);
+                        } catch (InvocationTargetException e) {
+                            throw new RuntimeException(e);
+                        } catch (IllegalAccessException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
 
 
                 String[] urlPatterns = servletInformation.getUrlPattern();

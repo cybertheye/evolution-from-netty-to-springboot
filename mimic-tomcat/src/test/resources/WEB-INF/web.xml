@@ -34,4 +34,28 @@
         <servlet-name>test</servlet-name>
         <url-pattern>/hello/*</url-pattern>
     </servlet-mapping>
+
+    <!--配置过滤器-->
+    <filter>
+        <filter-name>firstFilter</filter-name>
+        <filter-class>project.filter.FirstFilter</filter-class>
+    </filter>
+    <!--映射过滤器-->
+    <filter-mapping>
+        <filter-name>firstFilter</filter-name>
+        <!--“/*”表示拦截所有的请求 -->
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!--配置过滤器-->
+    <filter>
+        <filter-name>secondFilter</filter-name>
+        <filter-class>project.filter.SecondFilter</filter-class>
+    </filter>
+    <!--映射过滤器-->
+    <filter-mapping>
+        <filter-name>secondFilter</filter-name>
+        <!--“/*”表示拦截所有的请求 -->
+        <url-pattern>/hello/*</url-pattern>
+    </filter-mapping>
 </web-app>
