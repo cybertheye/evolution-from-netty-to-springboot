@@ -7,6 +7,7 @@ import com.attackonarchitect.utils.FilterUtils;
 import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @description:
@@ -53,27 +54,35 @@ public class FilterManagerImpl implements FilterManager{
     public List<Filter> getSpecifedFilters(String uri) {
 
         List<Filter> ret = new ArrayList<>();
+        // matchingFilterUri按匹配的优先级, 从完全匹配到部分匹配 有序排列
         List<String> matchingFilterUri = FilterUtils.getMatchingFilterUri(uri,this.getAllFilterUri());
 
         Map<String, Set<String>> webFilterComponents = componentScanner.getWebFilterComponents();
 
-        Optional<Set<String>> clazzNameSet = matchingFilterUri.stream()
-                .map(new Function<String, Set<String>>() {
+        // 按照层级关系, 完全匹配, 到部分匹配, 先对同一层级内的filter进行排序,再对总的进行排序
+        Optional<ArrayList<String>> clazzNameSet = matchingFilterUri.stream()
+                .map(new Function<String, ArrayList<String>>() {
                     @Override
-                    public Set<String> apply(String s) {
-                        return webFilterComponents.get(s);
+                    public ArrayList<String> apply(String s) {
+                        // 对同一层级内的filter进行排序
+                        return webFilterComponents.get(s).stream().sorted(new Comparator<String>() {
+                            @Override
+                            public int compare(String o1, String o2) {
+                                return componentScanner.getWebFilterComponentsOrder().get(o1) - componentScanner.getWebFilterComponentsOrder().get(o2);
+                            }
+                        }).collect(Collectors.toCollection(ArrayList::new));
                     }
                 })
-                .reduce(new BinaryOperator<Set<String>>() {
+                .reduce(new BinaryOperator<ArrayList<String>>() {
                     @Override
-                    public Set<String> apply(Set<String> s1, Set<String> s2) {
+                    public ArrayList<String> apply(ArrayList<String> s1, ArrayList<String> s2) {
                         s1.addAll(s2);
                         return s1;
                     }
                 });
 
-
-        clazzNameSet.orElse(new HashSet<>()).forEach(clzName->{
+        // 需要对重复的filter去重,前面层级出现过的filter,后面层级不再出现
+        clazzNameSet.orElse(new ArrayList<>()).stream().distinct().forEach(clzName->{
             ret.add(this.getSpecifedFilter(clzName));
         });
 

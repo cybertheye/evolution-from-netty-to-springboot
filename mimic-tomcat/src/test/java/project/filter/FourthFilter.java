@@ -16,7 +16,7 @@ public class FourthFilter implements Filter {
     @Override
     public boolean doFilter(MTRequest request, MTResponse response) throws UnsupportedEncodingException {
 
-        response.write("pass filter /hello/a/b/*");
+        response.write("pass filter fourth /hello/a/b/*");
 
         return true;
     }
