@@ -6,6 +6,8 @@ import com.attackonarchitect.servlet.Servlet;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @description:
@@ -15,6 +17,8 @@ public class FilterChainImpl implements FilterChain {
 
     private FilterNode head = new FilterNode(); //soldier
     private FilterNode tail;
+
+    private FilterNode currNode = null;
 
     private Servlet targetServlet;
 
@@ -61,15 +65,18 @@ public class FilterChainImpl implements FilterChain {
      */
     @Override
     public void start(MTRequest request, MTResponse response) {
-
-        FilterNode traveler = head.getNext();
+        // 获取下一个过滤器
+        // 如果没有过滤器, 则执行对应的servlet
+        currNode = Optional.ofNullable(currNode).orElse(head).getNext();
         try {
-            while (traveler != null && traveler.exec(request, response)) {
-                traveler=traveler.next;
+//            while (traveler != null && traveler.exec(request, response)) {
+//                traveler=traveler.next;
+//            }
+            if (Objects.isNull(currNode)) {
+                targetServlet.service(request,response);
+            } else {
+                currNode.exec(request, response, this);
             }
-
-            targetServlet.service(request,response);
-
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
