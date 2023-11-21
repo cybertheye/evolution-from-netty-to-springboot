@@ -42,4 +42,10 @@ public interface ComponentScanner {
      */
     Map<String,Set<String>> getWebFilterComponents();
 
+    /**
+     * 记录不同 filter 之间的执行顺序
+     * @return
+     */
+    Map<String,Integer> getWebFilterComponentsOrder();
+
 }

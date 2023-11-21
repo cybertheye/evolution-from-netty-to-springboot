@@ -18,8 +18,10 @@ public class SecondFilter implements Filter {
     public boolean doFilter(MTRequest request, MTResponse response, FilterChain filterChain) throws UnsupportedEncodingException {
         request.setAttribute("china","niubi");
 
+
         response.write("pass filter /hello/*");
         filterChain.start(request, response);
+
         return true;
     }
 }

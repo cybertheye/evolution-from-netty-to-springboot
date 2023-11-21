@@ -19,6 +19,8 @@ public class FourthFilter implements Filter {
 
         response.write("pass filter /hello/a/b/*");
         filterChain.start(request, response);
+
+        response.write("after pass");
         return true;
     }
 }

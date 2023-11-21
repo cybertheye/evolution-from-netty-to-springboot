@@ -11,13 +11,15 @@ import java.io.UnsupportedEncodingException;
 /**
  * @description:
  */
-@WebFilter("/*")
+@WebFilter(value = "/*",order = -1)
 public class FirstFilter implements Filter {
 
     @Override
+
     public boolean doFilter(MTRequest request, MTResponse response, FilterChain filterChain) throws UnsupportedEncodingException {
         response.write("pass filter /*");
         filterChain.start(request, response);
+
         return true;
     }
 }

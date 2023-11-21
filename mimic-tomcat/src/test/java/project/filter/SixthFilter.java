@@ -11,12 +11,14 @@ import java.io.UnsupportedEncodingException;
 /**
  * @description:
  */
-@WebFilter("/*")
+@WebFilter(order = 0)
 public class SixthFilter implements Filter {
     @Override
+
     public boolean doFilter(MTRequest request, MTResponse response, FilterChain filterChain) throws UnsupportedEncodingException {
         response.write("pass another filter /*");
         filterChain.start(request, response);
+
         return true;
     }
 }
