@@ -31,7 +31,7 @@ public class ApplicationContext implements ServletRegisterContext {
             //触发通知，但是放在这里通知其实不合理
             //因为万一有其他的 ServletContext 实现
             //所以还是放在工厂里面更好感觉。
-            notifier.notifyListeners(ServletContextListener.class,sce);
+            notifier.notifyListeners(sce);
 
         }
         return instance;
@@ -46,7 +46,7 @@ public class ApplicationContext implements ServletRegisterContext {
         event.setName(name);
         event.setValue(obj);
 
-        getNotifiler().notifyListeners(ServletContextAttributeListener.class,event);
+        getNotifiler().notifyListeners(event);
     }
 
     @Override
