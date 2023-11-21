@@ -6,10 +6,7 @@ import com.attackonarchitect.context.ServletContext;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @description:
@@ -43,11 +40,10 @@ public class ServletManagerImpl implements ServletManager {
         //新增 loadOnStartup 初始化功能
         Collection<ServletInformation> values = provider.getServletInformationMap().values();
 
-        values.forEach(information -> {
-            if (information.getLoadOnStartup() > 0) {
-                instantiate(information);
-            }
-        });
+        // 依据loadOnStartup顺序进行初始化
+        values.stream().filter(info -> info.getLoadOnStartup() > 0)
+                .sorted(Comparator.comparingInt(ServletInformation::getLoadOnStartup))
+                .forEachOrdered(this::instantiate);
 
 
     }
@@ -78,7 +74,7 @@ public class ServletManagerImpl implements ServletManager {
         ServletInformation servletInformation = servletInformationMap.get(uri);
 //        Map<String, String> webServletComponents = provider.getWebServletComponents();
 //        String clazzName = webServletComponents.get(uri);
-        Servlet ret = null;
+        Servlet ret;
         ret = instantiate(servletInformation);
         return ret;
     }
@@ -114,22 +110,23 @@ public class ServletManagerImpl implements ServletManager {
 
                 // 对于 注解 @WebInitParams 传过来的参数处理
                 Map<String, String> initParams = servletInformation.getInitParams();
-
-                Class<?> finalClazz = clazz;
-                Servlet finalInstance = instance;
-                initParams.forEach((key, value) -> {
-                    try {
-                        String setterName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1);
-                        Method method = finalClazz.getMethod(setterName,value.getClass());
-                        method.invoke(finalInstance,value);
-                    } catch (NoSuchMethodException e) {
-                        throw new RuntimeException(e);
-                    } catch (InvocationTargetException e) {
-                        throw new RuntimeException(e);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+                if(Objects.nonNull(initParams) && !initParams.isEmpty()){
+                    Class<?> finalClazz = clazz;
+                    Servlet finalInstance = instance;
+                    initParams.forEach((key, value) -> {
+                        try {
+                            String setterName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1);
+                            Method method = finalClazz.getMethod(setterName,value.getClass());
+                            method.invoke(finalInstance,value);
+                        } catch (NoSuchMethodException e) {
+                            throw new RuntimeException(e);
+                        } catch (InvocationTargetException e) {
+                            throw new RuntimeException(e);
+                        } catch (IllegalAccessException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
 
 
                 String[] urlPatterns = servletInformation.getUrlPattern();

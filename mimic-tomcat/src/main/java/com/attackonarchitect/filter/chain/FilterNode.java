@@ -12,8 +12,11 @@ public class FilterNode  {
     Filter filter;
     FilterNode next;
 
-    public boolean exec(MTRequest request, MTResponse response) throws UnsupportedEncodingException {
-        return filter.doFilter(request,response);
+    public boolean exec(MTRequest request, MTResponse response, FilterChain filterChain) throws UnsupportedEncodingException {
+//        return filter.doFilter(request,response);
+//        filterChain.start(request, response);
+        filter.doFilter(request, response, filterChain);
+        return true;
     }
 
     public Filter getFilter() {

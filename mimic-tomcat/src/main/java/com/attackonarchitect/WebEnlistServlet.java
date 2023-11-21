@@ -22,6 +22,11 @@ public @interface WebEnlistServlet {
 
     String[] urlPattern();
 
+    /**
+     * 是否懒加载
+     * 小于0 表示懒加载
+     * @return
+     */
     int loadOnStartup() default -1;
 
     WebInitParam[] initParams() default {};
