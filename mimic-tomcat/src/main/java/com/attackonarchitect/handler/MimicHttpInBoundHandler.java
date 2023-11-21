@@ -34,6 +34,7 @@ public class MimicHttpInBoundHandler extends ChannelInboundHandlerAdapter {
 
         this.parseParameters(req,parameters);
         request.setParametersDepot(parameters);
+        request.parseHttpHeaders(req);
 
         ServletRequestEvent servletRequestEvent = new ServletRequestEvent();
         //todo set属性
