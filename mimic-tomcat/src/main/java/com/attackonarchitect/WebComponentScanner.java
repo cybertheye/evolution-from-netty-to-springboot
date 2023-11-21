@@ -122,6 +122,7 @@ public class WebComponentScanner implements ComponentScanner {
                     }
                     if (webFilterAnno != null) {
                         String[] uris = webFilterAnno.value();
+                        webFilterComponentsOrder.put(clazz.getName(),webFilterAnno.order());
                         for (String uri : uris) {
                             Set<String> uriSet = webFilterComponents.getOrDefault(uri, new HashSet<>());
                             uriSet.add(clazz.getName());
@@ -141,6 +142,8 @@ public class WebComponentScanner implements ComponentScanner {
     private List<String> webListenerComponents = new ArrayList<>();
     private Map<String, String> webServletComponents = new HashMap<>();
     private Map<String, Set<String>> webFilterComponents = new HashMap<>();
+    // 记录filter 顺序
+    private Map<String, Integer> webFilterComponentsOrder = new HashMap<>();
 
     @Override
     public Map<String, ServletInformation> getServletInformationMap() {
@@ -160,5 +163,10 @@ public class WebComponentScanner implements ComponentScanner {
     @Override
     public Map<String, Set<String>> getWebFilterComponents() {
         return this.webFilterComponents;
+    }
+
+    @Override
+    public Map<String, Integer> getWebFilterComponentsOrder() {
+        return this.webFilterComponentsOrder;
     }
 }

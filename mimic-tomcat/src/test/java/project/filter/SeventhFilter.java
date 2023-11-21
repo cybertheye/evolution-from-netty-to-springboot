@@ -10,12 +10,12 @@ import java.io.UnsupportedEncodingException;
 /**
  * @description:
  */
-@WebFilter(value = "/*",order = -1)
-public class FirstFilter implements Filter {
+@WebFilter(order = 1)
+public class SeventhFilter implements Filter {
 
     @Override
     public boolean doFilter(MTRequest request, MTResponse response) throws UnsupportedEncodingException {
-        response.write("pass filter first /*");
+        response.write("pass filter seventh /*");
         return true;
     }
 }
