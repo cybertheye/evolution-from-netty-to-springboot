@@ -21,6 +21,7 @@ public class SimpleContextListener implements ServletContextListener, ServletCon
         System.out.println("inside contextInitialized : contextname = "+sce.getName());
     }
 
+
     @Override
     public void doNotify(Event event) {
         //根据逻辑定义attributeAdded或者contextInitialized实现，这里随便写一个
