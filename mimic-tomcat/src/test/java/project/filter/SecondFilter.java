@@ -19,7 +19,7 @@ public class SecondFilter implements Filter {
         request.setAttribute("china","niubi");
 
 
-        response.write("pass filter /hello/*");
+        response.write("pass second filter /hello/*");
         filterChain.start(request, response);
 
         return true;

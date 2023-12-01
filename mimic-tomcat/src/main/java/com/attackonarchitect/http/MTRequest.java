@@ -1,5 +1,6 @@
 package com.attackonarchitect.http;
 
+import com.attackonarchitect.http.session.HttpSession;
 import io.netty.handler.codec.http.HttpRequest;
 import com.attackonarchitect.context.ServletContext;
 
@@ -55,4 +56,10 @@ public interface MTRequest extends HttpRequest {
      * @return
      */
     Iterator<String> getCookieNames();
+
+    /**
+     * 获取Session
+     * @return
+     */
+    HttpSession getSession();
 }

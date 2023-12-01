@@ -29,6 +29,7 @@ public class MimicHttpInBoundHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         HttpRequest req  = (HttpRequest) msg;
 
+
         HttpMTRequest request = HttpRequestProxyFactory.createProxy(req,servletContext).createRequest();
         Map<String,String> parameters = new HashMap<>();
 
@@ -38,7 +39,12 @@ public class MimicHttpInBoundHandler extends ChannelInboundHandlerAdapter {
 
         ServletRequestEvent servletRequestEvent = new ServletRequestEvent();
         //todo set属性
-
+        // 是在在这里getSession() 和 set-cookie吧
+        // 这里是入口，通过ctx可以操作 request和 response 是这样吗
+        //
+        // response 的生成好像是在DefaultMimicTomcatChannelHandler
+        // 不过可以提前或者把 sessionID，放到servletContext里面，然后在DefaultMimicTomcatChannelHandler
+        // 生成response的地方从servletContext里面取出来，
         this.notifyRequestListener(servletRequestEvent);
 
         super.channelRead(ctx, request);

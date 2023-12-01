@@ -17,7 +17,7 @@ public class ThirdFilter implements Filter {
     @Override
 
     public boolean doFilter(MTRequest request, MTResponse response, FilterChain filterChain) throws UnsupportedEncodingException {
-        response.write("pass filter /hello/a/*");
+        response.write("pass third filter /hello/a/*");
         filterChain.start(request, response);
 
         return true;
