@@ -7,16 +7,13 @@ import com.attackonarchitect.http.cookie.MTCookieBuilder;
 import io.netty.util.internal.StringUtil;
 
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author xiong
  * @date 2023/11/29 17:20
  */
-public class HttpSessionManager implements SessionManager{
+public class HttpSessionManager implements SessionManager,Runnable{
 
     private static volatile HttpSessionManager instance = null;
     private  Map<String,HttpSession> sessionMap = new ConcurrentHashMap<>();
@@ -29,6 +26,8 @@ public class HttpSessionManager implements SessionManager{
             synchronized (HttpSessionManager.class){
                 if (instance == null){
                     instance = new HttpSessionManager();
+                    // 开启session过期检查线程
+                    new Thread(instance).start();
                 }
             }
         }
@@ -45,7 +44,7 @@ public class HttpSessionManager implements SessionManager{
         String sessionId = request.getCookie("JSESSIONID");
         if(StringUtil.isNullOrEmpty(sessionId)){
             // 创建session
-            HttpSession session = new MTHttpSession();
+            HttpSession session = new MTHttpSession(30 * 60);
             // 将session放入sessionMap
             getSessionMap().put(session.getSessionId(),session);
             // 将sessionId放入cookie
@@ -58,12 +57,35 @@ public class HttpSessionManager implements SessionManager{
 
             // Set-Cookie: JSESSIONID=xxx;Path=/; .......
             response.addHeader("Set-Cookie",cookie.toString());
+        }else {
+            // 更新session最后访问时间
+            HttpSession session = getSessionMap().get(sessionId);
+            if(session != null){
+               session.setLastAccessedTime(System.currentTimeMillis());
+            }
         }
+
 
     }
 
     @Override
     public Map<String, HttpSession> getSessionMap() {
         return getInstance().sessionMap;
+    }
+
+    @Override
+    public void run() {
+        for (;;){
+            try {
+                Thread.sleep(1000 * 30);
+                for (HttpSession session : getSessionMap().values()) {
+                    if(session.getLastAccessedTime() + session.getMaxInactiveInterval() * 1000L < System.currentTimeMillis()){
+                        invalidate(session.getSessionId());
+                    }
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -16,10 +16,6 @@ public interface HttpSession {
      */
     String getSessionId();
 
-    /**
-     * 使Session失效
-     */
-    void invalidate();
 
     /**
      * 获取Session创建时间
@@ -32,6 +28,8 @@ public interface HttpSession {
      * @return
      */
     long getLastAccessedTime();
+
+    void setLastAccessedTime(long lastAccessedTime);
 
 
     /**

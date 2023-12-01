@@ -25,6 +25,6 @@ public class FourhServlet extends MimicServlet {
         req.getParameters().forEach((key,value)->{
             System.out.println(key+"="+value);
         });
-        response.write(this.getClass().getName() +  "在这 /hello/a/b : uri="+req.uri());
+        response.write(this.getClass().getName() +  " /hello/a/b : uri="+req.uri());
     }
 }

@@ -15,10 +15,14 @@ public class MTHttpSession implements HttpSession {
     private final String sessionId;
     private final long creationTime;
     private long lastAccessedTime;
+    /**
+     * 单位：秒
+     */
     private final int maxInactiveInterval;
     private Attributes attributes;
 
-    private static final int DEFAULT_MAX_INACTIVE_INTERVAL = 30 * 60 * 1000;
+    private static final int DEFAULT_MAX_INACTIVE_INTERVAL = 30 * 60;
+
 
     public MTHttpSession() {
         this.sessionId = UUID.randomUUID().toString();
@@ -39,10 +43,6 @@ public class MTHttpSession implements HttpSession {
         return this.sessionId;
     }
 
-    @Override
-    public void invalidate() {
-        // todo 清除session
-    }
 
     @Override
     public long getCreationTime() {
@@ -54,7 +54,10 @@ public class MTHttpSession implements HttpSession {
         return this.lastAccessedTime;
     }
 
-
+    @Override
+    public void setLastAccessedTime(long lastAccessedTime) {
+        this.lastAccessedTime = lastAccessedTime;
+    }
 
     @Override
     public int getMaxInactiveInterval() {
