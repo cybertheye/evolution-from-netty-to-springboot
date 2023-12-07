@@ -30,6 +30,8 @@ public class SpiComponentScanner implements ComponentScanner {
     private final Map<String, Set<String>> webFilterComponents = new HashMap<>();
 
     private final ClassLoader classLoader;
+    // 记录filter 顺序
+    private final Map<String, Integer> webFilterComponentsOrder = new HashMap<>();
 
     public SpiComponentScanner(ClassLoader classLoader) {
         this.classLoader = Optional.ofNullable(classLoader).orElseGet(Thread.currentThread()::getContextClassLoader);
@@ -117,5 +119,10 @@ public class SpiComponentScanner implements ComponentScanner {
     @Override
     public Map<String, Set<String>> getWebFilterComponents() {
         return this.webFilterComponents;
+    }
+
+    @Override
+    public Map<String, Integer> getWebFilterComponentsOrder() {
+        return this.webFilterComponentsOrder;
     }
 }

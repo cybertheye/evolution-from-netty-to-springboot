@@ -1,5 +1,8 @@
 package com.attackonarchitect.context;
 
+import com.attackonarchitect.http.session.HttpSession;
+import com.attackonarchitect.http.session.HttpSessionManager;
+import com.attackonarchitect.http.session.SessionManager;
 import com.attackonarchitect.listener.*;
 import com.attackonarchitect.listener.webcontext.ServletContextAttributeEvent;
 import com.attackonarchitect.listener.webcontext.ServletContextAttributeListener;
@@ -15,11 +18,18 @@ import java.util.Map;
  * @description:
  */
 public class ApplicationContext implements ServletRegisterContext {
+    private static ApplicationContext instance;
+
+    private Map<String, Object> attributeDepot;
     //////--------
+    private Notifier notifier;
+
+    private SessionManager sessionManager;
+
     private ApplicationContext() {
     }
 
-    private static ApplicationContext instance;
+
 
     public static ServletContext getInstance(Notifier notifier) {
         if(instance == null){
@@ -37,8 +47,6 @@ public class ApplicationContext implements ServletRegisterContext {
         return instance;
     }
 
-    private Map<String, Object> attributeDepot;
-
     @Override
     public <T> void setAttribute(String name, T obj) {
         this.getAttributeDepot().put(name, obj);
@@ -54,8 +62,6 @@ public class ApplicationContext implements ServletRegisterContext {
         return this.getAttributeDepot().get(name);
     }
 
-
-    private Notifier notifier;
 
     ///////getter setter
 
@@ -73,6 +79,14 @@ public class ApplicationContext implements ServletRegisterContext {
     @Override
     public Notifier getNotifiler() {
         return this.notifier;
+    }
+
+    @Override
+    public SessionManager getSessionManager() {
+        if (this.sessionManager == null){
+            this.sessionManager = HttpSessionManager.getInstance();
+        }
+        return this.sessionManager;
     }
 
 

@@ -1,5 +1,6 @@
 package com.attackonarchitect.handler;
 
+import com.attackonarchitect.http.session.HttpSessionManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import com.attackonarchitect.ComponentScanner;
@@ -36,6 +37,9 @@ public class DefaultMimicTomcatChannelHandler extends ChannelInboundHandlerAdapt
         Servlet servlet = strategy.route(uri);
 
         MTResponse response = new HttpMTResponse(ctx);
+        // 这里是Servlet起点, request和 response在这里初始化,所以Session也可以在这里
+        servletContext.getSessionManager().initializeSession(request,response);
+
         // filter责任链
         Chain filterChain = FilterChainImplFactory.createFilterChain(servlet,uri,scanner);
 

@@ -2,7 +2,10 @@ package com.attackonarchitect.http;
 
 import com.attackonarchitect.http.cookie.MTCookie;
 import com.attackonarchitect.http.cookie.MTCookieBuilder;
+import com.attackonarchitect.http.session.HttpSession;
+import com.attackonarchitect.http.session.MTHttpSession;
 import com.attackonarchitect.utils.AssertUtil;
+import com.attackonarchitect.utils.StringUtil;
 import io.netty.handler.codec.DecoderResult;
 import io.netty.handler.codec.http.*;
 import com.attackonarchitect.context.ServletContext;
@@ -169,6 +172,13 @@ public class HttpMTRequest implements MTRequest{
     @Override
     public Iterator<String> getCookieNames() {
         return cookieMap.keySet().iterator();
+    }
+
+    @Override
+    public HttpSession getSession() {
+        // JSESSIONID
+        String sessionId = Optional.ofNullable(this.getCookie("JSESSIONID")).orElse("");
+        return this.context.getSessionManager().getSessionMap().get(sessionId);
     }
     //endregion
 

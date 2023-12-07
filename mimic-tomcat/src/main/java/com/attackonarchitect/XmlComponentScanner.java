@@ -27,6 +27,8 @@ public class XmlComponentScanner implements ComponentScanner {
     private final Map<String, ServletInformation> servletInformationMap = new HashMap<>();
 
     private final Map<String, Set<String>> webFilterComponents = new HashMap<>();
+    // 记录filter 顺序
+    private final Map<String, Integer> webFilterComponentsOrder = new HashMap<>();
 
     private final String resource;
 
@@ -237,5 +239,10 @@ public class XmlComponentScanner implements ComponentScanner {
     @Override
     public Map<String, Set<String>> getWebFilterComponents() {
         return this.webFilterComponents;
+    }
+
+    @Override
+    public Map<String, Integer> getWebFilterComponentsOrder() {
+        return this.webFilterComponentsOrder;
     }
 }

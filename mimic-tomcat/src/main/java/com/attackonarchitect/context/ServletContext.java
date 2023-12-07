@@ -1,9 +1,8 @@
 package com.attackonarchitect.context;
 
-import com.attackonarchitect.listener.EventListener;
+import com.attackonarchitect.http.session.SessionManager;
 import com.attackonarchitect.listener.Notifier;
 
-import java.util.List;
 
 /**
  * @description:
@@ -30,4 +29,6 @@ public interface ServletContext {
 //
 
     Notifier getNotifiler();
+
+    SessionManager getSessionManager();
 }

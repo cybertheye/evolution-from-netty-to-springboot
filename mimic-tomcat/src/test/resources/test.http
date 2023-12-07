@@ -12,3 +12,4 @@ GET http://localhost:9999/hello/a/b/xx?name=cy&password=123456
 
 ### fourth
 GET http://localhost:9999/hello/a/b?name=cy&password=123456
+Cookie: JSESSIONID=d0d6a71c-5470-4757-b733-c544f4855dcc;

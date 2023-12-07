@@ -29,6 +29,7 @@ public class MimicHttpInBoundHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         HttpRequest req  = (HttpRequest) msg;
 
+
         HttpMTRequest request = HttpRequestProxyFactory.createProxy(req,servletContext).createRequest();
         Map<String,String> parameters = new HashMap<>();
 
@@ -37,7 +38,6 @@ public class MimicHttpInBoundHandler extends ChannelInboundHandlerAdapter {
         request.parseHttpHeaders(req);
 
         ServletRequestEvent servletRequestEvent = new ServletRequestEvent();
-        //todo set属性
 
         this.notifyRequestListener(servletRequestEvent);
 
