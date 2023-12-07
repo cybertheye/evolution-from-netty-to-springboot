@@ -11,14 +11,15 @@ import java.util.List;
  * @description:
  */
 public class FilterChainImplFactory {
-    private FilterChainImplFactory(){}
+    private FilterChainImplFactory() {
+    }
 
-    
-    public static Chain createFilterChain(Servlet servlet, String uri, ComponentScanner scanner){
+
+    public static FilterChain createFilterChain(Servlet servlet, String uri, ComponentScanner scanner) {
         //
         FilterManager filterManager = FilterManagerImplFactory.getFilterManager(scanner);
         List<Filter> filterList = filterManager.getSpecifedFilters(uri);
 
-        return FilterChainImpl.createFilterChain(servlet,filterList);
+        return new DefaultFilterChain(servlet, filterList);
     }
 }

@@ -1,10 +1,10 @@
 package com.attackonarchitect.handler;
 
+import com.attackonarchitect.filter.chain.FilterChain;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import com.attackonarchitect.ComponentScanner;
 import com.attackonarchitect.context.ServletContext;
-import com.attackonarchitect.filter.chain.Chain;
 import com.attackonarchitect.filter.chain.FilterChainImplFactory;
 import com.attackonarchitect.http.HttpMTResponse;
 import com.attackonarchitect.http.MTRequest;
@@ -35,9 +35,9 @@ public class DefaultMimicTomcatChannelHandler extends ChannelInboundHandlerAdapt
 
         MTResponse response = new HttpMTResponse(ctx);
 
-        Chain filterChain = FilterChainImplFactory.createFilterChain(servlet,uri,scanner);
+        FilterChain filterChain = FilterChainImplFactory.createFilterChain(servlet,uri,scanner);
 
-        filterChain.start(request,response);
+        filterChain.doFilter(request,response);
     }
 
 
