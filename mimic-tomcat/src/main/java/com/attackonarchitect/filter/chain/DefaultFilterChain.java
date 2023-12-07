@@ -5,6 +5,7 @@ import com.attackonarchitect.http.MTResponse;
 import com.attackonarchitect.servlet.Servlet;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -56,7 +57,7 @@ public class DefaultFilterChain implements FilterChain {
         if (isEmpty(this.filters)) {
             this.filters = filters;
         } else {
-            this.filters.addAll(filters);
+            this.filters.addAll(0,filters);
         }
         initChain(this.filters);
 
@@ -68,7 +69,7 @@ public class DefaultFilterChain implements FilterChain {
         if (isEmpty(this.filters)) {
             this.filters = filters;
         } else {
-            this.filters.addAll(this.filters.size() - 1, filters);
+            this.filters.addAll( filters);
         }
         initChain(this.filters);
 
