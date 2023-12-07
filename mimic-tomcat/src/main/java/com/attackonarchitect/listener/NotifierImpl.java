@@ -24,10 +24,14 @@ public class NotifierImpl implements Notifier{
 
     //todo 添加其他的 listener
 
+    private List<EventListener> listeners=new ArrayList<>(16);
+
 
     public NotifierImpl(List<String> webListeners) {
-        init(webListeners);
+//        init(webListeners);
+        addListenersByPath(webListeners);
     }
+
 
     private void init(List<String> webListeners) {
 
@@ -35,20 +39,21 @@ public class NotifierImpl implements Notifier{
             try {
                 Class<?> clazz = Class.forName(listenerClazzName);
                 //web context
-                if (ServletContextListener.class.isAssignableFrom(clazz)) {
-                    getServletContextListenersList()
-                            .add((ServletContextListener) clazz.newInstance());
-                }
-                if(ServletContextAttributeListener.class.isAssignableFrom(clazz)){
-                    getServletContextAttributeListenerList()
-                            .add((ServletContextAttributeListener) clazz.newInstance());
-                }
-
-                // request
-                if(ServletRequestAttributeListener.class.isAssignableFrom(clazz)){
-                    getServletRequestAttributeListenerList()
-                            .add((ServletRequestAttributeListener) clazz.newInstance());
-                }
+                listeners.add((EventListener) clazz.newInstance());
+//                if (ServletContextListener.class.isAssignableFrom(clazz)) {
+//                    getServletContextListenersList()
+//                            .add((ServletContextListener) clazz.newInstance());
+//                }
+//                if(ServletContextAttributeListener.class.isAssignableFrom(clazz)){
+//                    getServletContextAttributeListenerList()
+//                            .add((ServletContextAttributeListener) clazz.newInstance());
+//                }
+//
+//                // request
+//                if(ServletRequestAttributeListener.class.isAssignableFrom(clazz)){
+//                    getServletRequestAttributeListenerList()
+//                            .add((ServletRequestAttributeListener) clazz.newInstance());
+//                }
 
                 // session
                 // todo 增加其他类型的 Listener
@@ -68,16 +73,48 @@ public class NotifierImpl implements Notifier{
     }
 
     @Override
-    public void notifyListeners(Class<?> listener, Event event) {
-        if(listener== ServletRequestAttributeListener.class){
-            notifyServletRequestAttributeListeners(event);
-        }
-        if(listener == ServletContextAttributeListener.class){
-            notifyServletContextAttributeListeners(event);
-        }
-        if(listener == ServletContextListener.class){
-            notifyServletContextListeners(event);
-        }
+    public void addListeners(List<EventListener> eventListeners) {
+        //doSomething
+    }
+
+    @Override
+    public void addListenersByPath(List<String> webListeners) {
+        webListeners.forEach(listenerClazzName->{
+            try {
+                Class<?> clazz = Class.forName(listenerClazzName);
+                //web context
+                listeners.add((EventListener) clazz.newInstance());
+                // session
+                // todo 增加其他类型的 Listener
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+
+
+        });
+    }
+
+    @Override
+    public List<EventListener> getListeners() {
+        return listeners;
+    }
+
+    @Override
+    public void notifyListeners(Event event) {
+//        if(listener== ServletRequestAttributeListener.class){
+//            notifyServletRequestAttributeListeners(event);
+//        }
+//        if(listener == ServletContextAttributeListener.class){
+//            notifyServletContextAttributeListeners(event);
+//        }
+//        if(listener == ServletContextListener.class){
+//            notifyServletContextListeners(event);
+//        }
+        new Thread(()-> listeners.forEach(d -> d.doNotify(event))).start();
 
         //添加其他类型
 

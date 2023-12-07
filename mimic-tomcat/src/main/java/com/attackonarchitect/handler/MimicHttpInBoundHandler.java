@@ -63,6 +63,6 @@ public class MimicHttpInBoundHandler extends ChannelInboundHandlerAdapter {
 
     private void notifyRequestListener(ServletRequestEvent sre) {
         Notifier notifier = (Notifier) servletContext.getAttribute("notifier");
-        notifier.notifyListeners(ServletRequestListener.class,sre);
+        notifier.notifyListeners(sre);
     }
 }

@@ -96,7 +96,7 @@ public class HttpMTRequest implements MTRequest{
     public void setAttribute(String name, Object obj){
         attributeDepot.put(name,obj);
         ServletRequestAttributeEvent srae = new ServletRequestAttributeEvent(name, obj);
-        context.getNotifiler().notifyListeners(ServletRequestAttributeListener.class,srae);
+        context.getNotifiler().notifyListeners(srae);
     }
 
     //////////////////// parameters

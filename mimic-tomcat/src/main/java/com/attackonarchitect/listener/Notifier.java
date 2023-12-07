@@ -7,5 +7,12 @@ import java.util.List;
  */
 
 public interface Notifier {
-    void notifyListeners(Class<?> listener ,Event event);
+
+    void addListeners(List<EventListener> eventListeners);
+
+    void addListenersByPath(List<String> eventListeners);
+
+    List<EventListener> getListeners();
+
+    void notifyListeners(Event event);
 }
